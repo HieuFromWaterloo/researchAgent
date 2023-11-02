@@ -22,6 +22,12 @@ from fastapi.logger import logger as fastapi_logger
 import uvicorn
 import streamlit as st
 from constants import *
+import time
+from datetime import datetime
+import pytz
+
+# Define the Eastern Timezone (ET)
+eastern_timezone = pytz.timezone("US/Eastern")
 
 load_dotenv()
 openai_key = os.getenv("OPENAI_KEY")
@@ -29,8 +35,6 @@ browserless_api_key = os.getenv("BROWSERLESS_KEY")
 serper_api_key = os.getenv("SERPER_KEY")
 
 # 1. Tool for search
-
-
 def search(query):
     url = "https://google.serper.dev/search"
 
@@ -87,7 +91,9 @@ def scrape_website(objective: str, url: str):
 
 
 def summary(objective, content):
-    llm = ChatOpenAI(temperature=LLM_TEMPERATURE, model=LLM_MODEL_ARCH)
+    llm = ChatOpenAI(openai_api_key=openai_key,
+                     temperature=LLM_TEMPERATURE,
+                     model=LLM_MODEL_ARCH)
 
     text_splitter = RecursiveCharacterTextSplitter(
         separators=["\n\n", "\n"], chunk_size=MAX_TEXT_CHUNK_LEN, chunk_overlap=500)
@@ -184,14 +190,27 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.before_request
-def before_request():
-    # Set the Content-Type header to 'application/json' for all requests
-    request.headers['Content-Type'] = 'application/json'
-
 @app.route('/')
 def index():
-    return "Hello Agent, R0D1!"
+    """
+    Welcome route for the API.
+    
+    Returns:
+        dict: JSON response containing a welcome message, status code, and timestamp.
+    """
+    # init timer
+    start_time = time.time()
+    current_datetime = datetime.now(eastern_timezone).strftime("%Y-%m-%d %H:%M:%S %Z")
+    end_time = time.time()
+    # Convert to milliseconds
+    inference_time_ms = (end_time - start_time) * 1_000  
+    welcome_message = {
+        "output": "Hello Agent, R0D1!",
+        "inference_time_ms": inference_time_ms,
+        "timestamp": current_datetime,
+        "status_code": 200
+    }
+    return make_response(jsonify(welcome_message), 200)
 
 class Query:
     def __init__(self, query):
@@ -199,32 +218,40 @@ class Query:
 
 @app.route("/query", methods=["POST"])
 def research_agent():
+    # init timer
+    start_time = time.time()
+    current_datetime = datetime.now(eastern_timezone).strftime("%Y-%m-%d %H:%M:%S %Z")
     try:
         data = request.json
         query = Query(data.get("query"))
         content = agent({"input": query.query})
         actual_content = content["output"]
-
+        end_time = time.time()
+        # Convert to milliseconds
+        inference_time_ms = (end_time - start_time) * 1_000
+        response_data = {
+            "output": actual_content,
+            "inference_time_ms": inference_time_ms,
+            "timestamp": current_datetime,
+            "status_code": 200
+        }
         # Create a JSON response with a 200 status code
-        response_data = jsonify(actual_content)
-        response = make_response(response_data, 200)
-
-        # Optionally, set additional response headers if needed
-        response.headers["Some-Header"] = "Header-Value"
-
-        return response
+        response_data_json = jsonify(response_data)
+        return make_response(response_data_json, 200)
     except Exception as e:
         # Handle errors gracefully and log them
         logger.error(f"An error occurred: {str(e)}")
-        error_message = {"error": "An error occurred while processing the request."}
-        return jsonify(error_message), 500
-
+        error_message = {
+            "output": "An error occurred while processing the request.",
+            "inference_time_ms": None,
+            "timestamp": current_datetime,
+            "status_code": 500
+        }
+        return make_response(jsonify(error_message), 500)
+    
 if __name__ == "__main__":
-    # Load sensitive information from environment variables
-    api_key = os.environ.get("API_KEY")
     # Start the Flask app
-    app.run(debug=True)
-
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 
 
