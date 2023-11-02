@@ -1,10 +1,9 @@
 import os
 from dotenv import load_dotenv
-from langchain import PromptTemplate
 from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import MessagesPlaceholder
+from langchain.prompts import MessagesPlaceholder, PromptTemplate
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
@@ -16,10 +15,15 @@ import requests
 import json
 from langchain.schema import SystemMessage
 from flask import Flask, request, jsonify
+from fastapi import FastAPI
+from fastapi.logger import logger as fastapi_logger
+import uvicorn
+import streamlit as st
+from constants import *
 
 load_dotenv()
 openai_key = os.getenv("OPENAI_KEY")
-brwoserless_api_key = os.getenv("BROWSERLESS_KEY")
+browserless_api_key = os.getenv("BROWSERLESS_KEY")
 serper_api_key = os.getenv("SERPER_KEY")
 
 # 1. Tool for search
@@ -65,25 +69,26 @@ def scrape_website(objective: str, url: str):
     data_json = json.dumps(data)
 
     # Send the POST request
-    post_url = f"https://chrome.browserless.io/content?token={brwoserless_api_key}"
+    post_url = f"https://chrome.browserless.io/content?token={browserless_api_key}"
     response = requests.post(post_url, headers=headers, data=data_json)
 
     # Check the response status code
     if response.status_code == 200:
+        print(f"BS4 STATUS: {response.status_code} (OK)")
         soup = BeautifulSoup(response.content, "html.parser")
         text = soup.get_text()
-        print("BS4 CONTENT:", text)
+        print(f"BS4 CONTENT: {text}")
 
-        return summary(objective, text) if len(text) > 10000 else text
+        return summary(objective, text) if len(text) > MAX_TEXT_CHUNK_LEN else text
     else:
         print(f"HTTP request failed with status code {response.status_code}")
 
 
 def summary(objective, content):
-    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    llm = ChatOpenAI(temperature=LLM_TEMPERATURE, model=LLM_MODEL_ARCH)
 
     text_splitter = RecursiveCharacterTextSplitter(
-        separators=["\n\n", "\n"], chunk_size=10000, chunk_overlap=500)
+        separators=["\n\n", "\n"], chunk_size=MAX_TEXT_CHUNK_LEN, chunk_overlap=500)
     docs = text_splitter.create_documents([content])
     map_prompt = """
     Write a summary of the following text for {objective}:
@@ -152,11 +157,11 @@ agent_kwargs = {
 }
 
 llm = ChatOpenAI(openai_api_key=openai_key,
-                 temperature=0, 
-                 model="gpt-3.5-turbo-16k-0613")
+                 temperature=LLM_TEMPERATURE, 
+                 model=LLM_MODEL_ARCH)
 
 memory = ConversationSummaryBufferMemory(
-    memory_key="memory", return_messages=True, llm=llm, max_token_limit=1000)
+    memory_key="memory", return_messages=True, llm=llm, max_token_limit=MAX_TOKEN_MEMORY)
 
 agent = initialize_agent(
     tools,
@@ -169,26 +174,52 @@ agent = initialize_agent(
 
 app = Flask(__name__)
 
+@app.before_request
+def before_request():
+    # Set the Content-Type header to 'application/json' for all requests
+    request.headers['Content-Type'] = 'application/json'
+
+@app.route('/')
+def index():
+    return "Hello Agent, R0D1!"
+
 class Query:
     def __init__(self, query):
         self.query = query
 
-@app.route("/", methods=["POST"])
+@app.route("/query", methods=["POST"])
 def research_agent():
+    # it's better to send post request via json
     data = request.json
-    query = Query(data["query"])
+    query = Query(data.get("query"))
+    # query = request.args.get("query") # this is used for get request in our server
     content = agent({"input": query.query})
     actual_content = content["output"]
+    print(jsonify(actual_content))
     return jsonify(actual_content)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 
-# 4. Use streamlit to create a web app
+# 5. Set this as an API endpoint via FastAPI
+# app = FastAPI()
+
+
+# class Query(BaseModel):
+#     query: str
+
+
+# @app.post("/")
+# def researchAgent(query: Query):
+#     query = query.query
+#     content = agent({"input": query})
+#     return content['output']
+
+# # 4. Use streamlit to create a web app
 # def main():
 #     st.set_page_config(page_title="AI research agent", page_icon=":bird:")
 
-#     st.header("AI research agent :bird:")
+#     st.header("AI research agent :lion:")
 #     query = st.text_input("Research goal")
 
 #     if query:
@@ -202,21 +233,6 @@ if __name__ == "__main__":
 # if __name__ == '__main__':
 #     main()
 
-
-# # 5. Set this as an API endpoint via FastAPI
-# app = FastAPI()
-
-
-# class Query(BaseModel):
-#     query: str
-
-
-# @app.post("/")
-# def researchAgent(query: Query):
-#     query = query.query
-#     content = agent({"input": query})
-#     actual_content = content['output']
-#     return actual_content
 
 
 
