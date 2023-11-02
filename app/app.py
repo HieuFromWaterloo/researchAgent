@@ -17,10 +17,6 @@ from langchain.schema import SystemMessage
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import logging
-from fastapi import FastAPI
-from fastapi.logger import logger as fastapi_logger
-import uvicorn
-import streamlit as st
 from constants import *
 import time
 from datetime import datetime
@@ -252,7 +248,3 @@ def research_agent():
 if __name__ == "__main__":
     # Start the Flask app
     app.run(debug=True, host='0.0.0.0', port=5000)
-
-
-
-
