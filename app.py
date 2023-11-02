@@ -14,7 +14,9 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from langchain.schema import SystemMessage
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+import logging
 from fastapi import FastAPI
 from fastapi.logger import logger as fastapi_logger
 import uvicorn
@@ -172,7 +174,15 @@ agent = initialize_agent(
     memory=memory,
 )
 
+# *Flask application
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
+
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.before_request
 def before_request():
@@ -189,49 +199,31 @@ class Query:
 
 @app.route("/query", methods=["POST"])
 def research_agent():
-    # it's better to send post request via json
-    data = request.json
-    query = Query(data.get("query"))
-    # query = request.args.get("query") # this is used for get request in our server
-    content = agent({"input": query.query})
-    actual_content = content["output"]
-    print(jsonify(actual_content))
-    return jsonify(actual_content)
+    try:
+        data = request.json
+        query = Query(data.get("query"))
+        content = agent({"input": query.query})
+        actual_content = content["output"]
+
+        # Create a JSON response with a 200 status code
+        response_data = jsonify(actual_content)
+        response = make_response(response_data, 200)
+
+        # Optionally, set additional response headers if needed
+        response.headers["Some-Header"] = "Header-Value"
+
+        return response
+    except Exception as e:
+        # Handle errors gracefully and log them
+        logger.error(f"An error occurred: {str(e)}")
+        error_message = {"error": "An error occurred while processing the request."}
+        return jsonify(error_message), 500
 
 if __name__ == "__main__":
+    # Load sensitive information from environment variables
+    api_key = os.environ.get("API_KEY")
+    # Start the Flask app
     app.run(debug=True)
-
-# 5. Set this as an API endpoint via FastAPI
-# app = FastAPI()
-
-
-# class Query(BaseModel):
-#     query: str
-
-
-# @app.post("/")
-# def researchAgent(query: Query):
-#     query = query.query
-#     content = agent({"input": query})
-#     return content['output']
-
-# # 4. Use streamlit to create a web app
-# def main():
-#     st.set_page_config(page_title="AI research agent", page_icon=":bird:")
-
-#     st.header("AI research agent :lion:")
-#     query = st.text_input("Research goal")
-
-#     if query:
-#         st.write("Doing research for ", query)
-
-#         result = agent({"input": query})
-
-#         st.info(result['output'])
-
-
-# if __name__ == '__main__':
-#     main()
 
 
 
