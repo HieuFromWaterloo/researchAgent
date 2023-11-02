@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 from langchain import PromptTemplate
 from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
@@ -16,11 +15,12 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from langchain.schema import SystemMessage
-from fastapi import FastAPI
+from flask import Flask, request, jsonify
 
 load_dotenv()
-brwoserless_api_key = os.getenv("BROWSERLESS_API_KEY")
-serper_api_key = os.getenv("SERP_API_KEY")
+openai_key = os.getenv("OPENAI_KEY")
+brwoserless_api_key = os.getenv("BROWSERLESS_KEY")
+serper_api_key = os.getenv("SERPER_KEY")
 
 # 1. Tool for search
 
@@ -72,13 +72,9 @@ def scrape_website(objective: str, url: str):
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
         text = soup.get_text()
-        print("CONTENTTTTTT:", text)
+        print("BS4 CONTENT:", text)
 
-        if len(text) > 10000:
-            output = summary(objective, text)
-            return output
-        else:
-            return text
+        return summary(objective, text) if len(text) > 10000 else text
     else:
         print(f"HTTP request failed with status code {response.status_code}")
 
@@ -105,9 +101,7 @@ def summary(objective, content):
         verbose=True
     )
 
-    output = summary_chain.run(input_documents=docs, objective=objective)
-
-    return output
+    return summary_chain.run(input_documents=docs, objective=objective)
 
 
 class ScrapeWebsiteInput(BaseModel):
@@ -146,7 +140,7 @@ system_message = SystemMessage(
             Please make sure you complete the objective above with the following rules:
             1/ You should do enough research to gather as much information as possible about the objective
             2/ If there are url of relevant links & articles, you will scrape it to gather more information
-            3/ After scraping & search, you should think "is there any new things i should search & scraping based on the data I collected to increase research quality?" If answer is yes, continue; But don't do this more than 3 iteratins
+            3/ After scraping & search, you should think "is there any new things i should search & scraping based on the data I collected to increase research quality?" If answer is yes, continue; But don't do this more than 3 iterations
             4/ You should not make things up, you should only write facts & data that you have gathered
             5/ In the final output, You should include all reference data & links to back up your research; You should include all reference data & links to back up your research
             6/ In the final output, You should include all reference data & links to back up your research; You should include all reference data & links to back up your research"""
@@ -157,7 +151,10 @@ agent_kwargs = {
     "system_message": system_message,
 }
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+llm = ChatOpenAI(openai_api_key=openai_key,
+                 temperature=0, 
+                 model="gpt-3.5-turbo-16k-0613")
+
 memory = ConversationSummaryBufferMemory(
     memory_key="memory", return_messages=True, llm=llm, max_token_limit=1000)
 
@@ -170,6 +167,22 @@ agent = initialize_agent(
     memory=memory,
 )
 
+app = Flask(__name__)
+
+class Query:
+    def __init__(self, query):
+        self.query = query
+
+@app.route("/", methods=["POST"])
+def research_agent():
+    data = request.json
+    query = Query(data["query"])
+    content = agent({"input": query.query})
+    actual_content = content["output"]
+    return jsonify(actual_content)
+
+if __name__ == "__main__":
+    app.run()
 
 # 4. Use streamlit to create a web app
 # def main():
@@ -190,17 +203,21 @@ agent = initialize_agent(
 #     main()
 
 
-# 5. Set this as an API endpoint via FastAPI
-app = FastAPI()
+# # 5. Set this as an API endpoint via FastAPI
+# app = FastAPI()
 
 
-class Query(BaseModel):
-    query: str
+# class Query(BaseModel):
+#     query: str
 
 
-@app.post("/")
-def researchAgent(query: Query):
-    query = query.query
-    content = agent({"input": query})
-    actual_content = content['output']
-    return actual_content
+# @app.post("/")
+# def researchAgent(query: Query):
+#     query = query.query
+#     content = agent({"input": query})
+#     actual_content = content['output']
+#     return actual_content
+
+
+
+
