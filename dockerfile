@@ -20,8 +20,18 @@ RUN pip3 install -r requirements.txt
 # Copy the entire project directory into the container
 COPY app /app
 
-# Expose the port that the Flask app will run on
-EXPOSE 5000
+# # Expose the port that the Flask app will run on
+# EXPOSE 5000
 
-# Define the command to run your Flask app
-CMD ["python3", "app.py"]
+# # Define the command to run your Flask app
+# CMD ["python3", "run.py"]
+
+# *RUN APP WITH GUNICORN
+# Expose the port that Gunicorn will listen on
+EXPOSE 8000
+
+# Start Gunicorn to run your Flask app
+# docker run -p 8000:8000 your-image-name:tag
+# app.run: This refers to the Python package/module structure. Since your run.py is inside the app directory, you specify app.run to indicate that you're importing the run module inside the app package.
+# :app: This specifies the name of the Flask application object within the module. If you defined your Flask app object with the name app in your run.py file (e.g., app = Flask(__name__)), then you should use :app to specify that you want to run the app object as your application.
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app.run:app"]
