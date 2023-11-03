@@ -6,7 +6,7 @@ FROM python:3.11
 # ENV TZ=America/New_York
 
 # Update and install necessary packages
-RUN apt-get update && apt-get install -y python3-pip python3-dev python3-venv -y
+RUN apt-get update && apt-get install -y python3-pip python3-dev python3-venv net-tools
 
 # Set the working directory in the container
 WORKDIR /app

@@ -1,6 +1,6 @@
 import requests
 
-query="To continue to solve very hard technical problem, what kind of lifestyle would allow me to get smarter after turning 30?"
+query="I am in my late 20s now and I want to work at the top hedge fund in the world as software engineer in the next 3 years. What should I do to best prepare myself?"
 
 def send_api_request(query):
     # Define the URL for your Flask app
