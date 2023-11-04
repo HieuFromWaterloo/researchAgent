@@ -7,6 +7,14 @@ on:
         description: "aws region"
         required: true
         default: "us-east-1"
+      ecr-repo-name:
+        description: "aws ecr repo name"
+        required: true
+        default: "flaskapp-agent"
+      ecr-image-tag:
+        description: "aws ecr image tag"
+        required: true
+        default: "v0.1.1"
       ecr-container-name:
         description: "aws ecr container name"
         required: true
@@ -29,6 +37,8 @@ jobs:
 
       - run: |
           echo "aws-region: ${{ github.event.inputs.aws-region }}"
+          echo "ecr-repo-name: ${{ github.event.inputs.ecr-repo-name }}"
+          echo "ecr-image-tag: ${{ github.event.inputs.ecr-image-tag }}"
           echo "ecr-container-name: ${{ github.event.inputs.ecr-container-name }}"
           echo "ecs-service-name: ${{ github.event.inputs.ecs-service-name }}"
           echo "ecs-cluster-name: ${{ github.event.inputs.ecs-cluster-name }}"
@@ -40,13 +50,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.aws-region }}
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ github.event.inputs.ecr-repo-name }}
+          IMAGE_TAG: ${{ github.event.inputs.ecr-image-tag }}
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: flaskapp-task-definition.json
           container-name: ${{ github.event.inputs.ecr-container-name }}
-          image: ${{ steps.build-image.outputs.image }}
+          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Deploy AWS ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
