@@ -2,4 +2,4 @@
 app/.env
 app/__pycache__
 __pycache__
-
+.github/workflows/*.json

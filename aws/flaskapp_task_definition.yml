@@ -1,0 +1,52 @@
+family: flaskapp-task-definition
+networkMode: awsvpc
+executionRoleArn: arn:aws:iam::<user_aws_account_id>:role/ecsTaskExecutionRole
+containerDefinitions:
+    - name: flaskapp-container
+      image: "<user_aws_account_id>.dkr.ecr.<user_aws_region>.amazonaws.com/<user_aws_ecr_repo>:<user_aws_ecr_image_tag>"
+      cpu: 0
+      portMappings:
+          - name: flaskapp-container-8000-tcp
+            containerPort: 8000
+            hostPort: 8000
+            protocol: tcp
+            appProtocol: http
+      essential: true
+      environment: []
+      environmentFiles: []
+      mountPoints: []
+      volumesFrom: []
+      ulimits: []
+      logConfiguration:
+          logDriver: awslogs
+          options:
+              awslogs-create-group: "true"
+              awslogs-group: "/ecs/flaskapp-task-definition"
+              awslogs-region: "<user_aws_region>"
+              awslogs-stream-prefix: "ecs"
+volumes: []
+placementConstraints: []
+requiresCompatibilities:
+    - FARGATE
+cpu: "2048"
+memory: "4096"
+compatibilities:
+    - EC2
+    - FARGATE
+revision: 1
+status: ACTIVE
+requiresAttributes:
+    - name: com.amazonaws.ecs.capability.logging-driver.awslogs
+    - name: ecs.capability.execution-role-awslogs
+    - name: com.amazonaws.ecs.capability.ecr-auth
+    - name: com.amazonaws.ecs.capability.docker-remote-api.1.19
+    - name: ecs.capability.execution-role-ecr-pull
+    - name: com.amazonaws.ecs.capability.docker-remote-api.1.18
+    - name: ecs.capability.task-eni
+    - name: com.amazonaws.ecs.capability.docker-remote-api.1.29
+runtimePlatform:
+    cpuArchitecture: X86_64
+    operatingSystemFamily: LINUX
+registeredAt: "2023-11-04T22:13:50.363Z"
+registeredBy: arn:aws:iam::<user_aws_account_id>:root
+tags: []

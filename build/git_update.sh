@@ -28,6 +28,8 @@ VNUM1=${CURRENT_VERSION_PARTS[0]}
 VNUM2=${CURRENT_VERSION_PARTS[1]}
 VNUM3=${CURRENT_VERSION_PARTS[2]}
 
+# reading more about semantic dev:
+# https://medium.com/fiverr-engineering/major-minor-patch-a5298e2e1798
 if [[ $VERSION == 'major' ]]
 then
   VNUM1=v$((VNUM1+1))
@@ -60,6 +62,11 @@ else
   echo "Already a tag on this commit"
 fi
 
-echo ::set-output name=git-tag::$NEW_TAG
+# ::set-output is being removed in the future so we need to update it to a new format
+# echo ::set-output name=git-tag::$NEW_TAG
+echo "git-tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
+# https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
+# run: echo "::set-output name={name}::{value}"
+# run: echo "git-tag=$NEW_TAG" >> $GITHUB_OUTPUT
 exit 0
