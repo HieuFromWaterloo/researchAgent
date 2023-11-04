@@ -34,4 +34,5 @@ EXPOSE 8000
 # docker run -p 8000:8000 your-image-name:tag
 # app.run: This refers to the Python package/module structure. Since your run.py is inside the app directory, you specify app.run to indicate that you're importing the run module inside the app package.
 # :app: This specifies the name of the Flask application object within the module. If you defined your Flask app object with the name app in your run.py file (e.g., app = Flask(__name__)), then you should use :app to specify that you want to run the app object as your application.
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "app.run:app"]
+# practical num of workers = num_cores*2 + 1
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "run:app", "--worker=5"] 
