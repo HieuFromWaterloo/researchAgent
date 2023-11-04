@@ -1,8 +1,6 @@
 ---
 name: Build and Push Flask Image to AWS ECR
-on:
-  push:
-    branches: [main]
+on: workflow_dispatch
 jobs:
   build-and-push:
     name: Build and Push to ECR

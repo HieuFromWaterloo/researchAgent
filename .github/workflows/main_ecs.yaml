@@ -1,8 +1,20 @@
 ---
 name: Deploy to ECS Fargate
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      aws-region:
+        description: "aws region"
+        required: true
+      ecr-container-name:
+        description: "aws ecr container name"
+        required: true
+      ecs-service-name:
+        description: "ecs service name"
+        required: true
+      ecs-cluster-name:
+        description: "ecs cluster name"
+        required: true
 jobs:
   build-and-push:
     name: Build and Push to ECR
@@ -16,20 +28,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws-region }}
+          aws-region: ${{ github.event.inputs.aws-region }}
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: flaskapp-task-definition.json
-          container-name: ${{ inputs.ecr-container-name }}
+          container-name: ${{ github.event.inputs.ecr-container-name }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy AWS ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ inputs.ecs-service-name }}
-          cluster: ${{ inputs.ecs-cluster-name }}
+          service: ${{ github.event.inputs.ecs-service-name }}
+          cluster: ${{ github.event.inputs.ecs-cluster-name }}
           wait-for-service-stability: true
