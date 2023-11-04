@@ -10,3 +10,5 @@ services:
     build: ./nginx
     container_name: nginx
     network_mode: host
+    
+    
