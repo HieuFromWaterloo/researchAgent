@@ -4,9 +4,14 @@
 
 The `researchAgent` project is an autonomous research agent powered by `Flask API`. It is designed to streamline and automate various research tasks, providing researchers with a versatile tool for their work. The end-to-end pipeline from `Docker` containerization, image push to `AWS ECR`, and deployment to `AWS ECS Fargate` with a `load balancer` is fully automated with `Github Actions`.
 
+## CI/CD Deployment Logs:
+
+- [Build and Push Flask Image to AWS ECR](https://github.com/HieuFromWaterloo/researchAgent/actions/workflows/main_ecr.yaml)
+- [Deploy to ECS Fargate](https://github.com/HieuFromWaterloo/researchAgent/actions/workflows/main_ecs.yaml)
+
 ---
 
-## Benefits of Using Cutting-Edge Technologies
+## Technologies
 
 The Agent project leverages a range of cutting-edge technologies to provide a high-performance machine learning service at scale, and with high availability and security. Here are the key benefits of using these technologies:
 
