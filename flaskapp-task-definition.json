@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:5",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:6",
     "containerDefinitions": [
         {
             "name": "flaskapp-container",
-            "image": "055150603932.dkr.ecr.us-east-1.amazonaws.com/flaskapp-agent:v0.1.1",
+            "image": "055150603932.dkr.ecr.us-east-1.amazonaws.com/flaskapp-agent:v1.1.0",
             "cpu": 2048,
             "memory": 8192,
             "memoryReservation": 7168,
@@ -36,7 +36,7 @@
     "taskRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 5,
+    "revision": 6,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -91,7 +91,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2023-11-05T01:28:20.532Z",
-    "registeredBy": "arn:aws:iam::055150603932:root",
+    "registeredAt": "2023-11-05T15:50:09.860Z",
+    "registeredBy": "arn:aws:iam::055150603932:user/maindev01",
     "tags": []
 }
