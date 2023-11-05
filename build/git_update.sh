@@ -63,8 +63,8 @@ else
 fi
 
 # ::set-output is being removed in the future so we need to update it to a new format
-# echo ::set-output name=git-tag::$NEW_TAG
-echo "git-tag=$NEW_TAG" >> $GITHUB_OUTPUT
+echo ::set-output name=git-tag::$NEW_TAG
+# echo "git-tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
 # https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
 # run: echo "::set-output name={name}::{value}"
