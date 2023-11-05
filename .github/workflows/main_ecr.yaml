@@ -38,6 +38,6 @@ jobs:
           ECR_REPOSITORY: flaskapp-agent
           IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |
-          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
