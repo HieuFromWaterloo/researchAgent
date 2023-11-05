@@ -1,10 +1,14 @@
 import requests
+# curl -X POST \
+#   -H "Content-Type: application/json" \
+#   -d '{"query": "What are the top misconceptions About Bitcoin and why they are missing the big picture. And, what some key reasons to invest in Bitcoin today?"}' \
+#   http://18.212.120.215:8000/query
 
-query="I am in my late 20s now and I want to work at the top hedge fund in the world as software engineer in the next 3 years. What should I do to best prepare myself?"
+query="What are the top misconceptions About Bitcoin and why they are missing the big picture. And, what some key reasons to invest in Bitcoin today?"
 
 def send_api_request(query):
     # Define the URL for your Flask app
-    url = 'http://127.0.0.1:5000/query'
+    url = 'http://127.0.0.1:8000/query'
 
     # Define the JSON data to send in the request
     data = {
