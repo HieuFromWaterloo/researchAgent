@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:2",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:4",
     "containerDefinitions": [
         {
             "name": "flaskapp-container",

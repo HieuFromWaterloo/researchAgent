@@ -10,7 +10,7 @@
                 "ecs:DescribeServices"
             ],
             "Resource": [
-                "arn:aws:iam::055150603932:role/ecsTaskExecutionRole"
+                "*"
             ]
         }
     ]
