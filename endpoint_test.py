@@ -9,7 +9,7 @@ query="What are the top misconceptions About Bitcoin and why they are missing th
 def send_api_request(query):
     # Define the URL for your Flask app
     # or ECS endpoint:  http://18.212.120.215:8000/query
-    url = 'http://localhost:5000/query'
+    url = 'http://localhost:8000/query'
 
     # Define the JSON data to send in the request
     data = {
