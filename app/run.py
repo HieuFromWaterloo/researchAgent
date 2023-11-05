@@ -94,11 +94,7 @@ def summary(objective, content):
     text_splitter = RecursiveCharacterTextSplitter(
         separators=["\n\n", "\n"], chunk_size=MAX_TEXT_CHUNK_LEN, chunk_overlap=500)
     docs = text_splitter.create_documents([content])
-    map_prompt = """
-    Write a summary of the following text for {objective}:
-    "{text}"
-    SUMMARY:
-    """
+    map_prompt = summary_prompt
     map_prompt_template = PromptTemplate(
         template=map_prompt, input_variables=["text", "objective"])
 
@@ -122,7 +118,7 @@ class ScrapeWebsiteInput(BaseModel):
 
 class ScrapeWebsiteTool(BaseTool):
     name = "scrape_website"
-    description = "This function is designed to extract data from a website URL based on a specified objective. Please provide both the URL and the objective as inputs. Ensure that the URL is sourced only from the search results and not fabricated. DO NOT make up any url"
+    description = "This function is designed to extract data from a website URL based on a specified objective. Please provide both the URL and the objective as inputs. DO NOT make up any url. Ensure that the URL is sourced only from the search results and not fabricated."
     args_schema: Type[BaseModel] = ScrapeWebsiteInput
 
     def _run(self, objective: str, url: str):
@@ -143,7 +139,7 @@ tools = [
 ]
 
 system_message = SystemMessage(
-    content=research_prompt1)
+    content=research_prompt1_t4)
 
 agent_kwargs = {
     "extra_prompt_messages": [MessagesPlaceholder(variable_name="memory")],

@@ -4,12 +4,12 @@ import requests
 #   -d '{"query": "What are the top misconceptions About Bitcoin and why they are missing the big picture. And, what some key reasons to invest in Bitcoin today?"}' \
 #   http://18.212.120.215:8000/query
 
-query="What are the top misconceptions About Bitcoin and why they are missing the big picture. And, what some key reasons to invest in Bitcoin today?"
+query="What are the top misconceptions about Bitcoin and why they are missing the big picture. And, what some key reasons to invest in Bitcoin today?"
 
 def send_api_request(query):
     # Define the URL for your Flask app
     # or ECS endpoint:  http://18.212.120.215:8000/query
-    url = 'http://localhost:8000/query'
+    url = 'http://localhost:5000/query'
 
     # Define the JSON data to send in the request
     data = {
