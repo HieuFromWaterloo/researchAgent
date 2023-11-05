@@ -7,7 +7,7 @@
                 "ecs:RegisterTaskDefinition",
                 "ecs:ListTaskDefinitions",
                 "ecs:DescribeTaskDefinition",
-                "iam:PassRole"
+                "ecs:DescribeServices"
             ],
             "Resource": [
                 "arn:aws:iam::055150603932:role/ecsTaskExecutionRole"
