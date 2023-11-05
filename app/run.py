@@ -118,7 +118,8 @@ class ScrapeWebsiteInput(BaseModel):
 
 class ScrapeWebsiteTool(BaseTool):
     name = "scrape_website"
-    description = "This function is designed to extract data from a website URL based on a specified objective. Please provide both the URL and the objective as inputs. DO NOT make up any url. Ensure that the URL is sourced only from the search results and not fabricated."
+    # description = "This function is designed to extract data from a website URL based on a specified objective. Please provide both the URL and the objective as inputs. DO NOT make up any url. Ensure that the URL is sourced only from the search results and not fabricated."
+    description = "useful when you need to get data from a website url, passing both url and objective to the function; DO NOT make up any url, the url should only be from the search results"
     args_schema: Type[BaseModel] = ScrapeWebsiteInput
 
     def _run(self, objective: str, url: str):
@@ -133,13 +134,13 @@ tools = [
     Tool(
         name="Search",
         func=search,
-        description="This tool is valuable for addressing inquiries regarding current events and data. It's essential to formulate precise and targeted questions when using it."
+        description="This tool is useful for addressing questions regarding current events and data. It's essential to formulate precise and targeted questions when using it. You should ask targeted questions."
     ),
     ScrapeWebsiteTool(),
 ]
 
 system_message = SystemMessage(
-    content=research_prompt1_t4)
+    content=research_prompt_t4)
 
 agent_kwargs = {
     "extra_prompt_messages": [MessagesPlaceholder(variable_name="memory")],
