@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:2",
     "containerDefinitions": [
         {
             "name": "flaskapp-container",
@@ -33,9 +33,10 @@
         }
     ],
     "family": "flaskapp-task-definition",
+    "taskRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 1,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -50,6 +51,9 @@
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -78,7 +82,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2023-11-04T22:13:50.363Z",
+    "registeredAt": "2023-11-05T00:08:07.501Z",
     "registeredBy": "arn:aws:iam::055150603932:root",
     "tags": []
 }
