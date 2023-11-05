@@ -22,7 +22,7 @@ on:
       ecs-service-name:
         description: "ecs service name"
         required: true
-        default: "flaskapp-agent"
+        default: "ResearchAgent"
       ecs-cluster-name:
         description: "ecs cluster name"
         required: true

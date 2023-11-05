@@ -1,10 +1,12 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:4",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:055150603932:task-definition/flaskapp-task-definition:5",
     "containerDefinitions": [
         {
             "name": "flaskapp-container",
             "image": "055150603932.dkr.ecr.us-east-1.amazonaws.com/flaskapp-agent:v0.1.1",
-            "cpu": 0,
+            "cpu": 2048,
+            "memory": 8192,
+            "memoryReservation": 7168,
             "portMappings": [
                 {
                     "name": "flaskapp-container-8000-tcp",
@@ -16,10 +18,8 @@
             ],
             "essential": true,
             "environment": [],
-            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
-            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -36,7 +36,7 @@
     "taskRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::055150603932:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 2,
+    "revision": 5,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -53,10 +53,16 @@
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
         },
         {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
             "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "ecs.capability.extensible-ephemeral-storage"
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
@@ -77,12 +83,15 @@
         "FARGATE"
     ],
     "cpu": "2048",
-    "memory": "4096",
+    "memory": "8192",
+    "ephemeralStorage": {
+        "sizeInGiB": 24
+    },
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2023-11-05T00:08:07.501Z",
+    "registeredAt": "2023-11-05T01:28:20.532Z",
     "registeredBy": "arn:aws:iam::055150603932:root",
     "tags": []
 }
