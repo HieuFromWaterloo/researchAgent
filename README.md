@@ -2,7 +2,7 @@
 
 ## Description
 
-The `researchAgent`` is designed to streamline and automate various research tasks. It takes in user questions and employs advanced web scraping and natural language processing (NLP) techniques to search the internet for the most relevant and accurate information. The results are presented with concise key point summaries and URL evidence, helping researchers significantly enhance their research efficiency., helping researchers significantly enhance their research efficiency.
+The `researchAgent` is designed to streamline and automate various research tasks. It takes in user questions and employs advanced web scraping and natural language processing (NLP) techniques to search the internet for the most relevant and accurate information. The results are presented with concise key point summaries and URL evidence, helping researchers significantly enhance their research efficiency., helping researchers significantly enhance their research efficiency.
 
 The `researchAgent` project is an autonomous research agent powered by `Flask API`. The end-to-end pipeline from `Docker` containerization, image push to `AWS ECR`, and deployment to `AWS ECS Fargate` with a `load balancer` is fully automated with `Github Actions`.
 
