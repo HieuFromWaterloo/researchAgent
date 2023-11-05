@@ -31,6 +31,13 @@ jobs:
         run: |
           bash ./build/git_update.sh -v major
 
+      - name: Add api secrets to .env
+        id: add-api-keys-env
+        run: |
+          echo "OPENAI_KEY='${{ secrets.OPENAI_KEY }}'" >> ./app/.env
+          echo "SERPER_KEY='${{ secrets.SERPER_KEY }}'" >> ./app/.env
+          echo "BROWSERLESS_KEY='${{ secrets.BROWSERLESS_KEY }}'" >> ./app/.env
+
       - name: Build, Tag, and Push the Image to Amazon ECR
         id: build-image
         env:
