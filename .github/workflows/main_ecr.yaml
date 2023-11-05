@@ -1,6 +1,12 @@
 ---
 name: Build and Push Flask Image to AWS ECR
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      aws-region:
+        description: "aws region"
+        required: true
+        default: "us-east-1"
 jobs:
   build-and-push:
     name: Build and Push to ECR
@@ -14,7 +20,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ github.event.inputs.aws-region }}
 
       - name: Login to Amazon ECR
         id: login-ecr
